@@ -1,10 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Everything Automotive</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script type="module" src="script.js" defer></script>
 </head>
 <body>
   <header>
@@ -15,7 +16,7 @@
   <section class="auth-section">
     <h2>Log In</h2>
     <form class="auth-form" id="auth-form">
-      <input type="text" id="username" placeholder="Username (email)" required>
+      <input type="email" id="username" placeholder="Email" required>
       <input type="password" id="password" placeholder="Password" required>
       <button type="submit">Log In</button>
     </form>
@@ -26,7 +27,7 @@
   <section class="auth-section">
     <h2>Register</h2>
     <form class="register-form" id="register-form">
-      <input type="text" id="reg-username" placeholder="Username (email)" required>
+      <input type="email" id="reg-username" placeholder="Email" required>
       <input type="password" id="reg-password" placeholder="Password" required>
       <button type="submit">Register</button>
     </form>
@@ -39,211 +40,21 @@
       <input type="text" id="make" placeholder="Make" required>
       <input type="text" id="model" placeholder="Model" required>
       <input type="number" id="year" placeholder="Year" required>
-      <select id="engine"><option>Engine</option><option>V4</option><option>V6</option><option>V8</option></select>
-      <select id="fuel"><option>Fuel</option><option>Gasoline</option><option>Diesel</option><option>Electric</option></select>
-      <select id="transmission"><option>Transmission</option><option>Automatic</option><option>Manual</option></select>
-      <select id="body"><option>Body Style</option><option>Sedan</option><option>SUV</option><option>Truck</option></select>
-      <button type="submit">Add Vehicle</button>
+      <select id="engine" required>
+        <option value="">Select Engine</option>
+        <option value="V4">V4</option>
+        <option value="V6">V6</option>
+        <option value="V8">V8</option>
+      </select>
+      <button type="submit">Save Vehicle</button>
     </form>
-    <ul class="garage-list" id="garage-list" style="list-style:none;padding:0;"></ul>
+    <p id="garage-status"></p>
   </section>
 
-  <main class="section">
-    <h2>Featured Products</h2>
-    <div class="products" id="featured-products"></div>
-  </main>
-
-  <section class="section">
-    <h2>Search Automotive Parts on Amazon</h2>
-    <div class="search-bar">
-      <form id="amazon-search-form" target="_blank" onsubmit="return handleSearchSubmit();">
-        <input type="text" id="search-query" placeholder="Search parts, tools, accessories..." required>
-        <button type="submit">Search</button>
-      </form>
-    </div>
+  <section class="search-section">
+    <h2>Find Parts on Amazon</h2>
+    <button id="search-amazon">Search Parts for My Vehicle</button>
+    <div id="results"></div>
   </section>
-
-  <footer class="disclaimer">
-    As an Amazon Associate, we earn from qualifying purchases.
-  </footer>
-
-  
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
-  </script>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAsZ7Hm-_hEvO9yaWOTYHRHadNaqxYbJNo",
-      authDomain: "everything-automotive-fc626.firebaseapp.com",
-      projectId: "everything-automotive-fc626",
-      storageBucket: "everything-automotive-fc626.firebasestorage.app",
-      messagingSenderId: "858971338679",
-      appId: "1:858971338679:web:aeded0f8f2b44db0665a32",
-      measurementId: "G-FNTWN5ZWDQ"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    document.getElementById('register-form').addEventListener('submit', async e => {
-      e.preventDefault();
-      const email = document.getElementById('reg-username').value.trim();
-      const password = document.getElementById('reg-password').value.trim();
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        document.getElementById('register-status').textContent = 'Registration successful!';
-      } catch (error) {
-        document.getElementById('register-status').textContent = error.message;
-      }
-    });
-
-    document.getElementById('auth-form').addEventListener('submit', async e => {
-      e.preventDefault();
-      const email = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-      } catch (error) {
-        document.getElementById('auth-status').textContent = error.message;
-      }
-    });
-
-    document.getElementById('logout-btn').addEventListener('click', async () => {
-      await signOut(auth);
-      document.getElementById('auth-status').textContent = 'Logged out';
-      document.getElementById('logout-btn').style.display = 'none';
-      document.getElementById('garage-list').innerHTML = '';
-    });
-
-    onAuthStateChanged(auth, async user => {
-      if (user) {
-        document.getElementById('auth-status').textContent = 'Logged in as ' + user.email;
-        document.getElementById('logout-btn').style.display = 'inline-block';
-        loadGarage(user.uid);
-        loadProducts(user.uid);
-      }
-    });
-
-
-function handleSearchSubmit() {
-  const query = document.getElementById('search-query').value.trim();
-  if (!query) return false;
-
-  const defaultVehicle = localStorage.getItem('defaultVehicle');
-  let searchString = query;
-  if (defaultVehicle) {
-    searchString = `${defaultVehicle} ${query}`;
-  }
-
-  const encoded = encodeURIComponent(searchString);
-  const affiliateTag = "myaffiliatetag123"; // Replace if needed
-  const url = `https://www.amazon.com/s?k=${encoded}&tag=${affiliateTag}`;
-  window.open(url, "_blank");
-  return false;
-}
-
-onAuthStateChanged(auth, async user => {
-  if (user) {
-    document.getElementById('auth-status').textContent = 'Logged in as ' + user.email;
-    document.getElementById('logout-btn').style.display = 'inline-block';
-    const docSnap = await getDoc(doc(db, "garages", user.uid));
-    if (docSnap.exists()) {
-      const v = docSnap.data().default;
-      localStorage.setItem('defaultVehicle', `${v.year} ${v.make} ${v.model}`);
-    }
-    loadGarage(user.uid);
-    loadProducts(user.uid);
-  }
-});
-
-
-    document.getElementById('garage-form').addEventListener('submit', async e => {
-      e.preventDefault();
-      const user = auth.currentUser;
-      if (!user) return;
-
-      const make = document.getElementById('make').value.trim();
-      const model = document.getElementById('model').value.trim();
-      const year = document.getElementById('year').value.trim();
-      const engine = document.getElementById('engine').value;
-      const fuel = document.getElementById('fuel').value;
-      const transmission = document.getElementById('transmission').value;
-      const body = document.getElementById('body').value;
-      const vehicle = { make, model, year, engine, fuel, transmission, body };
-
-      const garageRef = doc(db, "garages", user.uid);
-      await setDoc(garageRef, { vehicles: arrayUnion(vehicle), default: vehicle }, { merge: true });
-      loadGarage(user.uid);
-    });
-
-    async function loadGarage(uid) {
-      const docSnap = await getDoc(doc(db, "garages", uid));
-      const list = document.getElementById('garage-list');
-      list.innerHTML = '';
-      if (docSnap.exists()) {
-        const garage = docSnap.data().vehicles || [];
-        garage.forEach(v => {
-          const li = document.createElement('li');
-          li.innerHTML = `<strong>${v.year} ${v.make} ${v.model}</strong>`;
-          list.appendChild(li);
-        });
-      }
-    }
-
-    async function loadProducts(uid) {
-      const snap = await getDoc(doc(db, "garages", uid));
-      const container = document.getElementById('featured-products');
-      container.innerHTML = '';
-      let key = "DEFAULT";
-      if (snap.exists()) {
-        const v = snap.data().default;
-        key = `${v.year} ${v.make} ${v.model}`;
-      }
-
-      const productMap = {
-        "2020 Toyota Camry": [
-          {
-            name: "Camry Floor Mats",
-            img: "https://m.media-amazon.com/images/I/81cHC-bZQ1L._AC_SL1500_.jpg",
-            url: "https://www.amazon.com/dp/B07YR5W5QZ?tag=myaffiliatetag123"
-          }
-        ],
-        "2018 Ford F-150": [
-          {
-            name: "F-150 Tonneau Cover",
-            img: "https://m.media-amazon.com/images/I/71YwN2TgyUL._AC_SL1500_.jpg",
-            url: "https://www.amazon.com/dp/B07D7Q5P8K?tag=myaffiliatetag123"
-          }
-        ],
-        "DEFAULT": [
-          {
-            name: "Universal Jump Starter",
-            img: "https://m.media-amazon.com/images/I/61n+aVvP8GL._AC_SL1000_.jpg",
-            url: "https://www.amazon.com/dp/B015TKUPIC?tag=myaffiliatetag123"
-          }
-        ]
-      };
-
-      const products = productMap[key] || productMap["DEFAULT"];
-      products.forEach(p => {
-        const card = document.createElement('div');
-        card.style.cssText = "background:#fff;color:#000;border-radius:8px;padding:1em;width:250px;margin:0.5em;box-shadow:0 0 10px rgba(0,0,0,0.2)";
-        card.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;text-align:center;">
-          <img loading="lazy" src="${p.img}" alt="${p.name}" style="width:100%;border-radius:6px;">
-          <h3 style="font-size:1em;">${p.name}</h3>
-          <a href="${p.url}" target="_blank">Buy on Amazon</a>
-        `;
-        container.appendChild(card);
-      });
-    }
-  </script>
 </body>
 </html>
