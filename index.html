@@ -2,59 +2,69 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Everything Automotive</title>
-  <link rel="stylesheet" href="styles.css" />
-  <script type="module" src="script.js" defer></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Air Suspension Kit Search</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #f2f2f2; }
+    input, button { padding: 0.5rem; margin: 0.5rem 0; width: 100%; max-width: 300px; }
+    .product { background: white; padding: 1rem; margin: 1rem 0; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    .product img { max-width: 100%; height: auto; border-radius: 4px; }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Everything Automotive</h1>
-    <p class="subtitle">Your Hub for Automotive Tools, Accessories & Tech</p>
-  </header>
+  <h1>Find Air Suspension Kits</h1>
+  <form id="searchForm">
+    <input type="number" id="year" placeholder="Year" required min="1990" max="2030"><br>
+    <input type="text" id="make" placeholder="Make" required><br>
+    <input type="text" id="model" placeholder="Model" required><br>
+    <button type="submit">Search</button>
+  </form>
 
-  <section class="auth-section">
-    <h2>Log In</h2>
-    <form class="auth-form" id="auth-form">
-      <input type="email" id="username" placeholder="Email" required>
-      <input type="password" id="password" placeholder="Password" required>
-      <button type="submit">Log In</button>
-    </form>
-    <button id="logout-btn" style="display:none;">Log Out</button>
-    <p id="auth-status"></p>
-  </section>
+  <div id="results"></div>
 
-  <section class="auth-section">
-    <h2>Register</h2>
-    <form class="register-form" id="register-form">
-      <input type="email" id="reg-username" placeholder="Email" required>
-      <input type="password" id="reg-password" placeholder="Password" required>
-      <button type="submit">Register</button>
-    </form>
-    <p id="register-status"></p>
-  </section>
+  <script>
+    let products = [];
 
-  <section class="garage-section">
-    <h2>My Garage</h2>
-    <form class="garage-form" id="garage-form">
-      <input type="text" id="make" placeholder="Make" required>
-      <input type="text" id="model" placeholder="Model" required>
-      <input type="number" id="year" placeholder="Year" required>
-      <select id="engine" required>
-        <option value="">Select Engine</option>
-        <option value="V4">V4</option>
-        <option value="V6">V6</option>
-        <option value="V8">V8</option>
-      </select>
-      <button type="submit">Save Vehicle</button>
-    </form>
-    <p id="garage-status"></p>
-  </section>
+    async function loadProducts() {
+      const res = await fetch('products.json');
+      products = await res.json();
+    }
 
-  <section class="search-section">
-    <h2>Find Parts on Amazon</h2>
-    <button id="search-amazon">Search Parts for My Vehicle</button>
-    <div id="results"></div>
-  </section>
+    function search(year, make, model) {
+      make = make.toLowerCase();
+      model = model.toLowerCase();
+      const results = products.filter(p => 
+        p.year == year && 
+        p.make.toLowerCase() === make && 
+        p.model.toLowerCase() === model
+      );
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+      if (results.length === 0) {
+        resultsDiv.innerHTML = '<p>No results found.</p>';
+        return;
+      }
+      results.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.innerHTML = `
+          <h3>${p.name}</h3>
+          <img src="${p.image}" alt="${p.name}">
+          <p><a href="${p.url}" target="_blank">View on Amazon</a></p>
+        `;
+        resultsDiv.appendChild(div);
+      });
+    }
+
+    document.getElementById('searchForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const year = document.getElementById('year').value;
+      const make = document.getElementById('make').value.trim();
+      const model = document.getElementById('model').value.trim();
+      search(year, make, model);
+    });
+
+    loadProducts();
+  </script>
 </body>
 </html>
