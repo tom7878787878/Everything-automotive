@@ -2,69 +2,218 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Air Suspension Kit Search</title>
-  <style>
-    body { font-family: sans-serif; padding: 2rem; background: #f2f2f2; }
-    input, button { padding: 0.5rem; margin: 0.5rem 0; width: 100%; max-width: 300px; }
-    .product { background: white; padding: 1rem; margin: 1rem 0; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
-    .product img { max-width: 100%; height: auto; border-radius: 4px; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apex Auto Parts</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
-  <h1>Find Air Suspension Kits</h1>
-  <form id="searchForm">
-    <input type="number" id="year" placeholder="Year" required min="1990" max="2030"><br>
-    <input type="text" id="make" placeholder="Make" required><br>
-    <input type="text" id="model" placeholder="Model" required><br>
-    <button type="submit">Search</button>
-  </form>
+  <div id="notificationContainer" class="notification-container" aria-live="polite">
+    </div>
+  <header>
+    <nav class="container" role="navigation" aria-label="Main Navigation">
+      <div class="logo">🚗 APEX AUTO PARTS</div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#" onclick="showPage('auth')">Login / Register</a></li>
+        <li><a href="#" onclick="showPage('home')">Home</a></li>
+        <li><a href="#" onclick="showPage('products')">Products</a></li>
+        <li><a href="#" onclick="showPage('garage')">My Garage</a></li>
+        <li><a href="#" onclick="showPage('wishlist')">My Wishlist</a></li> <li><a href="#" onclick="showPage('contact')">Contact</a></li>
+      </ul>
+      <span id="userEmail" aria-live="polite"></span>
+      <div class="hamburger-menu" id="hamburgerMenu" role="button" aria-controls="navLinks" aria-expanded="false" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </nav>
+  </header>
 
-  <div id="results"></div>
+  <main role="main">
+    <section id="home" class="page active">
+      <div class="hero">
+        <h1>Apex Auto Parts</h1>
+        <p>Your Trusted Auto Parts Supplier</p>
+        <button onclick="showPage('products')">Shop Now</button>
+      </div>
+    </section>
 
-  <script>
-    let products = [];
+    <section id="products" class="page">
+      <div class="container">
+        <h2>Find Parts for Your Vehicle</h2>
+        
+        <div id="productContent" class="product-options">
+            </div>
 
-    async function loadProducts() {
-      const res = await fetch('products.json');
-      products = await res.json();
-    }
+        <h3>General Featured Products</h3>
+        <div class="grid" id="featuredProductsGrid"> 
+          <div class="card" 
+               data-product-id="oil-filter-acdelco"
+               data-product-name="Oil Filter" 
+               data-product-price="12.99" 
+               data-amazon-url="https://amzn.to/4f7A3tG" 
+               data-image-url="https://via.placeholder.com/100x100?text=Oil+Filter">
+            <img src="https://via.placeholder.com/100x100?text=Oil+Filter" alt="ACDelco Oil Filter">
+            <h4>Oil Filter</h4>
+            <p>ACDelco – $12.99</p>
+            <a href="https://amzn.to/4f7A3tG" target="_blank" rel="noopener noreferrer" aria-label="Buy ACDelco Oil Filter on Amazon">Buy on Amazon</a>
+            <button class="add-to-wishlist-btn">Add to Wishlist</button>
+          </div>
+          <div class="card" 
+               data-product-id="brake-pads-wagner"
+               data-product-name="Brake Pads" 
+               data-product-price="89.99" 
+               data-amazon-url="https://amzn.to/3GSGPGS" 
+               data-image-url="https://via.placeholder.com/100x100?text=Brake+Pads">
+            <img src="https://via.placeholder.com/100x100?text=Brake+Pads" alt="Wagner Brake Pads">
+            <h4>Brake Pads</h4>
+            <p>Wagner – $89.99</p>
+            <a href="https://amzn.to/3GSGPGS" target="_blank" rel="noopener noreferrer" aria-label="Buy Wagner Brake Pads on Amazon">Buy on Amazon</a>
+            <button class="add-to-wishlist-btn">Add to Wishlist</button>
+          </div>
+          <div class="card" 
+               data-product-id="spark-plugs-ngk"
+               data-product-name="Spark Plugs" 
+               data-product-price="7.50" 
+               data-amazon-url="https://amzn.to/4lXf1A0" 
+               data-image-url="https://via.placeholder.com/100x100?text=Spark+Plugs">
+            <img src="https://via.placeholder.com/100x100?text=Spark+Plugs" alt="NGK Spark Plugs">
+            <h4>Spark Plugs</h4>
+            <p>NGK – $7.50 each</p>
+            <a href="https://amzn.to/4lXf1A0" target="_blank" rel="noopener noreferrer" aria-label="Buy NGK Spark Plugs on Amazon">Buy on Amazon</a>
+            <button class="add-to-wishlist-btn">Add to Wishlist</button>
+          </div>
+          <div class="card" 
+               data-product-id="wiper-blades-bosch"
+               data-product-name="Wiper Blades" 
+               data-product-price="25.00" 
+               data-amazon-url="https://amzn.to/4lBWnOf" data-image-url="https://via.placeholder.com/100x100?text=Wiper+Blades">
+            <img src="https://via.placeholder.com/100x100?text=Wiper+Blades" alt="Bosch Icon Wiper Blades">
+            <h4>Wiper Blades</h4>
+            <p>Bosch Icon – $25.00</p>
+            <a href="https://amzn.to/4lBWnOf" target="_blank" rel="noopener noreferrer" aria-label="Buy Bosch Icon Wiper Blades on Amazon">Buy on Amazon</a> <button class="add-to-wishlist-btn">Add to Wishlist</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    function search(year, make, model) {
-      make = make.toLowerCase();
-      model = model.toLowerCase();
-      const results = products.filter(p => 
-        p.year == year && 
-        p.make.toLowerCase() === make && 
-        p.model.toLowerCase() === model
-      );
-      const resultsDiv = document.getElementById('results');
-      resultsDiv.innerHTML = '';
-      if (results.length === 0) {
-        resultsDiv.innerHTML = '<p>No results found.</p>';
-        return;
-      }
-      results.forEach(p => {
-        const div = document.createElement('div');
-        div.className = 'product';
-        div.innerHTML = `
-          <h3>${p.name}</h3>
-          <img src="${p.image}" alt="${p.name}">
-          <p><a href="${p.url}" target="_blank">View on Amazon</a></p>
-        `;
-        resultsDiv.appendChild(div);
-      });
-    }
+    <section id="garage" class="page">
+      <div class="container">
+        <h2>My Garage</h2>
+        <form id="garageForm">
+          <h3>Add a New Vehicle (Max 3)</h3>
+          <label for="make">Make</label>
+          <input type="text" id="make" placeholder="Make" required aria-describedby="makeError"/>
+          <span id="makeError" class="error-message" aria-live="polite"></span>
 
-    document.getElementById('searchForm').addEventListener('submit', e => {
-      e.preventDefault();
-      const year = document.getElementById('year').value;
-      const make = document.getElementById('make').value.trim();
-      const model = document.getElementById('model').value.trim();
-      search(year, make, model);
-    });
+          <label for="model">Model</label>
+          <input type="text" id="model" placeholder="Model" required aria-describedby="modelError"/>
+          <span id="modelError" class="error-message" aria-live="polite"></span>
 
-    loadProducts();
-  </script>
+          <label for="year">Year</label>
+          <input type="number" id="year" placeholder="Year" min="1900" max="2100" required aria-describedby="yearError"/> 
+          <span id="yearError" class="error-message" aria-live="polite"></span>
+
+          <button type="submit">Save Vehicle</button>
+        </form>
+        
+        <h3>My Saved Vehicles</h3>
+        <div id="savedVehicles" class="grid">
+          <p id="noVehiclesMessage" class="no-items-message">No vehicles saved yet. Add one above!</p>
+          </div>
+      </div>
+    </section>
+
+    <section id="wishlist" class="page">
+        <div class="container">
+            <h2>My Wishlist</h2>
+            <div id="wishlistItems" class="grid" aria-live="polite">
+                <p class="no-items-message">Please log in to see your wishlist, or add some products from the Products page!</p>
+            </div>
+            <button id="clearWishlistBtn" style="margin-top: 2rem;">Clear Wishlist</button>
+        </div>
+    </section>
+
+    <section id="contact" class="page">
+      <div class="container">
+        <h2>Contact Us</h2>
+        <form id="contactForm" action="https://formspree.io/f/YOUR_FORMSPREE_FORM_ID" method="POST">
+          <h3>Send us a message!</h3>
+          <label for="contactName">Name</label>
+          <input type="text" id="contactName" name="name" placeholder="Your Name" required aria-describedby="contactNameError"/>
+          <span id="contactNameError" class="error-message" aria-live="polite"></span>
+
+          <label for="contactEmail">Email</label>
+          <input type="email" id="contactEmail" name="email" placeholder="Your Email" required aria-describedby="contactEmailError"/>
+          <span id="contactEmailError" class="error-message" aria-live="polite"></span>
+
+          <label for="contactMessage">Message</label>
+          <textarea id="contactMessage" name="message" placeholder="Your Message" required aria-describedby="contactMessageError"></textarea>
+          <span id="contactMessageError" class="error-live" aria-live="polite"></span>
+
+          <button type="submit">Send Message</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="auth" class="page">
+      <div class="container">
+        <h2>Login / Register</h2>
+        <form id="loginForm">
+          <h3>Login</h3>
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" placeholder="Email" required aria-describedby="loginEmailError"/>
+          <span id="loginEmailError" class="error-message" aria-live="polite"></span>
+
+          <label for="loginPass">Password</label>
+          <div class="password-input-container">
+            <input type="password" id="loginPass" placeholder="Password" required aria-describedby="loginPassError"/>
+            <button type="button" id="toggleLoginPass" aria-label="Show password">👁️</button>
+          </div>
+          <span id="loginPassError" class="error-message" aria-live="polite"></span>
+          <a href="#" class="forgot-password-link">Forgot Password?</a>
+          <button type="submit">Login</button>
+        </form>
+        <form id="registerForm">
+          <h3>Register</h3>
+          <label for="regEmail">Email</label>
+          <input type="email" id="regEmail" placeholder="Email" required aria-describedby="regEmailError"/>
+          <span id="regEmailError" class="error-message" aria-live="polite"></span>
+
+          <label for="regPass">Password</label>
+          <div class="password-input-container">
+            <input type="password" id="regPass" placeholder="Password" required aria-describedby="regPassError"/>
+            <button type="button" id="toggleRegPass" aria-label="Show password">👁️</button>
+          </div>
+          <span id="regPassError" class="error-message" aria-live="polite"></span>
+          <button type="submit">Register</button>
+        </form>
+        <button id="googleLoginBtn" onclick="googleLogin()">Login with Google</button>
+        <button id="logoutBtn" onclick="logout()">Logout</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; <span id="currentYear"></span> Apex Auto Parts. All rights reserved.</p>
+      <ul class="footer-links">
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">Sitemap</a></li>
+      </ul>
+      <div class="social-media">
+        <a href="#" aria-label="Facebook"><img src="path/to/facebook-icon.png" alt="Facebook"></a>
+        <a href="#" aria-label="Instagram"><img src="path/to/instagram-icon.png" alt="Instagram"></a>
+        <a href="#" aria-label="Twitter"><img src="path/to/twitter-icon.png" alt="Twitter"></a>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="script.js"></script>
 </body>
 </html>
